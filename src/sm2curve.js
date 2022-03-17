@@ -1,6 +1,6 @@
 const {Curve} = require('ecurve');
 const bigi = require('bigi');
-const curveParams = {
+const SM2_CURVE_PARAMS = {
   "p": "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF",
   "a": "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC",
   "b": "28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93",
@@ -11,6 +11,7 @@ const curveParams = {
 };
 
 function getSM2Curve(){
+  const curve = SM2_CURVE_PARAMS;
 
   var p = new bigi(curve.p, 16)
   var a = new bigi(curve.a, 16)

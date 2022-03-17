@@ -175,7 +175,7 @@ function browserEntropy() {
 
 /**
   @arg {Buffer} keyBuffer data
-  @arg {string} keyType = sha256x2, GM, etc
+  @arg {string} keyType = sha256x2, K1, etc
   @return {string} checksum encoded base58 string
 */
 function checkEncode(keyBuffer, keyType = null) {
@@ -195,7 +195,7 @@ function checkEncode(keyBuffer, keyType = null) {
 
 /**
   @arg {Buffer} keyString data
-  @arg {string} keyType = sha256x2, GM, etc
+  @arg {string} keyType = sha256x2, K1, etc
   @return {string} checksum encoded base58 string
 */
 function checkDecode(keyString, keyType = null) {

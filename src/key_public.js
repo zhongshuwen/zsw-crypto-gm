@@ -1,8 +1,9 @@
 const assert = require('assert');
 const ecurve = require('ecurve');
 const BigInteger = require('bigi');
-const { getSM2Curve } = require('./sm2curve');
-const secp256k1 = getSM2Curve();
+
+const secp256k1 =  require('./sm2curve').getSM2Curve()
+
 const hash = require('./hash');
 const keyUtils = require('./key_utils');
 
@@ -37,13 +38,13 @@ function PublicKey(Q, pubkey_prefix = 'EOS') {
 
     // /**
     //     @todo secp224r1
-    //     @return {string} PUB_GM_base58pubkey..
+    //     @return {string} PUB_K1_base58pubkey..
     // */
     // function toString() {
     //     if(pubdata) {
     //         return pubdata
     //     }
-    //     pubdata = `PUB_GM_` + keyUtils.checkEncode(toBuffer(), 'GM')
+    //     pubdata = `PUB_K1_` + keyUtils.checkEncode(toBuffer(), 'K1')
     //     return pubdata;
     // }
 
@@ -126,7 +127,7 @@ PublicKey.fromPoint = function(point) {
 }
 
 /**
-    @arg {string} public_key - like PUB_GM_base58pubkey..
+    @arg {string} public_key - like PUB_K1_base58pubkey..
     @arg {string} [pubkey_prefix = 'EOS'] - public key prefix
     @return PublicKey or `null` (invalid)
 */
@@ -139,7 +140,7 @@ PublicKey.fromString = function(public_key, pubkey_prefix = 'EOS') {
 }
 
 /**
-    @arg {string} public_key - like PUB_GM_base58pubkey..
+    @arg {string} public_key - like PUB_K1_base58pubkey..
     @arg {string} [pubkey_prefix = 'EOS'] - public key prefix
 
     @throws {Error} if public key is invalid
@@ -157,9 +158,9 @@ PublicKey.fromStringOrThrow = function(public_key, pubkey_prefix = 'EOS') {
       }
       return PublicKey.fromBuffer(keyUtils.checkDecode(public_key))
     }
-    assert(match.length === 3, 'Expecting public key like: PUB_GM_base58pubkey..')
+    assert(match.length === 3, 'Expecting public key like: PUB_K1_base58pubkey..')
     const [, keyType, keyString] = match
-    assert.equal(keyType, 'GM', 'GM private key expected')
+    assert.equal(keyType, 'K1', 'K1 private key expected')
     return PublicKey.fromBuffer(keyUtils.checkDecode(keyString, keyType))
 }
 

@@ -7,7 +7,7 @@ const BigInteger = require('bigi');
 const keyUtils = require('./key_utils');
 const PublicKey = require('./key_public');
 const PrivateKey = require('./key_private');
-const { encodeDer } = require('./asn1');
+const { encodeDer, decodeDer } = require('./asn1');
 const jsbnBigInteger = require('jsbn').BigInteger
 
 module.exports = Signature
@@ -119,11 +119,12 @@ function Signature(r, s, i, pub) {
         var buf;
         buf = Buffer.alloc(105);
 
-        const sigCore = Buffer.from(encodeDer(new jsbnBigInteger(r.toHex(), 16), new jsbnBigInteger(s.toHex(), 16)),'hex');
+        const sigCore = Buffer.from(encodeDer(new jsbnBigInteger(r.toString(), 10), new jsbnBigInteger(s.toString(), 10)),'hex');
         const pubEnc = pub.Q.getEncoded(true);
-        return Buffer.concat([pubEnc,sigCore]);
-
-        return buf;
+        const parts = Buffer.alloc(105);
+        parts.set(pubEnc, 0);
+        parts.set(sigCore, 33);
+        return parts;
     };
 
     function toHex() {
@@ -213,13 +214,15 @@ Signature.signHash = function(dataSha256, privateKey, encoding = 'hex') {
     i = null;
     nonce = 0;
     e = BigInteger.fromBuffer(dataSha256);
+    ecsignature = ecdsa.sign(curve, dataSha256, privateKey.d, nonce++);
+    
     while (true) {
       ecsignature = ecdsa.sign(curve, dataSha256, privateKey.d, nonce++);
       der = ecsignature.toDER();
       lenR = der[3];
       lenS = der[5 + lenR];
       if (lenR === 32 && lenS === 32) {
-        i = ecdsa.calcPubKeyRecoveryParam(curve, e, ecsignature, privateKey.toPublic().Q);
+        i = 9//ecdsa.calcPubKeyRecoveryParam(curve, e, ecsignature, privateKey.toPublic().Q);
         i += 4;  // compressed
         i += 27; // compact  //  24 or 27 :( forcing odd-y 2nd key candidate)
         break;
@@ -228,18 +231,20 @@ Signature.signHash = function(dataSha256, privateKey, encoding = 'hex') {
         console.log("WARN: " + nonce + " attempts to find canonical signature");
       }
     }
-    return Signature(ecsignature.r, ecsignature.s, i, privateKey.toPublic());
+    const v= Signature(ecsignature.r, ecsignature.s, i, privateKey.toPublic());
+    return v;
 };
 
 Signature.fromBuffer = function(buf) {
     var i, r, s;
     assert(Buffer.isBuffer(buf), 'Buffer is required')
-    assert.equal(buf.length, 65, 'Invalid signature length');
-    i = buf.readUInt8(0);
-    assert.equal(i - 27, i - 27 & 7, 'Invalid signature parameter');
-    r = BigInteger.fromBuffer(buf.slice(1, 33));
-    s = BigInteger.fromBuffer(buf.slice(33));
-    return Signature(r, s, i);
+    assert.equal(buf.length, 105, 'Invalid signature length');
+    const pubKey = buf.slice(0,33);
+    const actualSigBuffer = buf.slice(33);
+    const decoded = decodeDer(actualSigBuffer.toString('hex'));
+
+
+    return Signature(decoded.r, decoded.s, 0, PublicKey.fromBuffer(pubKey));
 };
 
 Signature.fromHex = function(hex) {
@@ -254,6 +259,7 @@ Signature.fromString = function(signature) {
     try {
         return Signature.fromStringOrThrow(signature)
     } catch (e) {
+//        console.error(e);
         return null;
     }
 }
