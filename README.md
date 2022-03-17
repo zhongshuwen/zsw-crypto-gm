@@ -1,20 +1,20 @@
-[![NPM](https://img.shields.io/npm/v/zsw-crypto.svg)](https://www.npmjs.org/package/zsw-crypto)
-[![Build Status](https://travis-ci.org/zhongshuwen/zsw-crypto.svg?branch=master)](https://travis-ci.org/zhongshuwen/zsw-crypto)
+[![NPM](https://img.shields.io/npm/v/zsw-crypto-gm.svg)](https://www.npmjs.org/package/zsw-crypto-gm)
+[![Build Status](https://travis-ci.org/zhongshuwen/zsw-crypto-gm.svg?branch=master)](https://travis-ci.org/zhongshuwen/zsw-crypto-gm)
 
 # 中数文加密代码库
 
 # 使用方式：
 
 ```js
-import ecc from 'zsw-crypto'
+import ecc from 'zsw-crypto-gm'
 // or
-const ecc = require('zsw-crypto')
+const ecc = require('zsw-crypto-gm')
 ```
 
 # Include
 
--   Install with: `yarn add zsw-crypto`
--   Html script tag, see [releases](https://github.com/zhongshuwen/zsw-crypto/releases) for the correct **version** and its matching script **integrity** hash.
+-   Install with: `yarn add zsw-crypto-gm`
+-   Html script tag, see [releases](https://github.com/zhongshuwen/zsw-crypto-gm/releases) for the correct **version** and its matching script **integrity** hash.
 
 # Common API
 
@@ -267,7 +267,7 @@ Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 # Usage (Object API)
 
 ```js
-let {PrivateKey, PublicKey, Signature, Aes, key_utils, config} = require('zsw-crypto')
+let {PrivateKey, PublicKey, Signature, Aes, key_utils, config} = require('zsw-crypto-gm')
 
 // Create a new random private key
 let privateWif
@@ -287,16 +287,16 @@ pubkey = PrivateKey.fromString(privateWif).toPublic().toString()
 # Browser
 
 ```bash
-git clone https://github.com/zhongshuwen/zsw-crypto.git
-cd zsw-crypto
+git clone https://github.com/zhongshuwen/zsw-crypto-gm.git
+cd zsw-crypto-gm
 yarn
 yarn build_browser
-# builds: ./dist/zsw-crypto.js
+# builds: ./dist/zsw-crypto-gm.js
 # Verify release hash
 ```
 
 ```html
-<script src=zsw-crypto.js></script>
+<script src=zsw-crypto-gm.js></script>
 ```
 
 ```js

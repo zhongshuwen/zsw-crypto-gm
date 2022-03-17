@@ -1,18 +1,22 @@
 const ecdsa = require('./ecdsa');
 const hash = require('./hash');
-const curve = require('ecurve').getCurveByName('secp256k1');
+const { getSM2Curve } = require('./sm2curve');
+const curve = getSM2Curve();
 const assert = require('assert');
 const BigInteger = require('bigi');
 const keyUtils = require('./key_utils');
 const PublicKey = require('./key_public');
 const PrivateKey = require('./key_private');
+const { encodeDer } = require('./asn1');
+const jsbnBigInteger = require('jsbn').BigInteger
 
 module.exports = Signature
 
-function Signature(r, s, i) {
+function Signature(r, s, i, pub) {
     assert.equal(r != null, true, 'Missing parameter');
     assert.equal(s != null, true, 'Missing parameter');
     assert.equal(i != null, true, 'Missing parameter');
+    assert.equal(pub != null, true, 'Missing parameter');
 
     /**
         Verify signed data.
@@ -113,10 +117,12 @@ function Signature(r, s, i) {
 
     function toBuffer() {
         var buf;
-        buf = new Buffer(65);
-        buf.writeUInt8(i, 0);
-        r.toBuffer(32).copy(buf, 1);
-        s.toBuffer(32).copy(buf, 33);
+        buf = Buffer.alloc(105);
+
+        const sigCore = Buffer.from(encodeDer(new jsbnBigInteger(r.toHex(), 16), new jsbnBigInteger(s.toHex(), 16)),'hex');
+        const pubEnc = pub.Q.getEncoded(true);
+        return Buffer.concat([pubEnc,sigCore]);
+
         return buf;
     };
 
@@ -130,7 +136,7 @@ function Signature(r, s, i) {
       if(signatureCache) {
           return signatureCache
       }
-      signatureCache = 'SIG_K1_' + keyUtils.checkEncode(toBuffer(), 'K1')
+      signatureCache = 'SIG_GM_' + keyUtils.checkEncode(toBuffer(), 'GM')
       return signatureCache
     }
 
@@ -193,6 +199,7 @@ Signature.sign = function(data, privateKey, encoding = 'utf8') {
     @return {Signature}
 */
 Signature.signHash = function(dataSha256, privateKey, encoding = 'hex') {
+    
     if(typeof dataSha256 === 'string') {
         dataSha256 = Buffer.from(dataSha256, encoding)
     }
@@ -221,7 +228,7 @@ Signature.signHash = function(dataSha256, privateKey, encoding = 'hex') {
         console.log("WARN: " + nonce + " attempts to find canonical signature");
       }
     }
-    return Signature(ecsignature.r, ecsignature.s, i);
+    return Signature(ecsignature.r, ecsignature.s, i, privateKey.toPublic());
 };
 
 Signature.fromBuffer = function(buf) {
@@ -240,7 +247,7 @@ Signature.fromHex = function(hex) {
 };
 
 /**
-    @arg {string} signature - like SIG_K1_base58signature..
+    @arg {string} signature - like SIG_GM_base58signature..
     @return {Signature} or `null` (invalid)
 */
 Signature.fromString = function(signature) {
@@ -252,16 +259,16 @@ Signature.fromString = function(signature) {
 }
 
 /**
-    @arg {string} signature - like SIG_K1_base58signature..
+    @arg {string} signature - like SIG_GM_base58signature..
     @throws {Error} invalid
     @return {Signature}
 */
 Signature.fromStringOrThrow = function(signature) {
     assert.equal(typeof signature, 'string', 'signature')
     const match = signature.match(/^SIG_([A-Za-z0-9]+)_([A-Za-z0-9]+)$/)
-    assert(match != null && match.length === 3, 'Expecting signature like: SIG_K1_base58signature..')
+    assert(match != null && match.length === 3, 'Expecting signature like: SIG_GM_base58signature..')
     const [, keyType, keyString] = match
-    assert.equal(keyType, 'K1', 'K1 signature expected')
+    assert.equal(keyType, 'GM', 'GM signature expected')
     return Signature.fromBuffer(keyUtils.checkDecode(keyString, keyType))
 }
 
