@@ -10,23 +10,25 @@ describe('Common API', () => {
     const pvt = await ecc.unsafeRandomKey()
     assert.equal(typeof pvt, 'string', 'pvt')
     assert(/^5[HJK]/.test(wif))
-    // assert(/^PVT_K1_/.test(pvt)) // todo
+    // assert(/^PVT_GM_/.test(pvt)) // todo
   })
 
   it('seedPrivate', () => {
     assert.equal(ecc.seedPrivate(''), wif)
-    // assert.equal(ecc.seedPrivate(''), 'PVT_K1_2jH3nnhxhR3zPUcsKaWWZC9ZmZAnKm3GAnFD1xynGJE1Znuvjd')
+    // assert.equal(ecc.seedPrivate(''), 'PVT_GM_2jH3nnhxhR3zPUcsKaWWZC9ZmZAnKm3GAnFD1xynGJE1Znuvjd')
   })
 
   it('privateToPublic', () => {
-    // const pub = 'PUB_K1_859gxfnXyUriMgUeThh1fWv3oqcpLFyHa3TfFYC4PK2Ht7beeX'
+    // const pub = 'PUB_GM_859gxfnXyUriMgUeThh1fWv3oqcpLFyHa3TfFYC4PK2Ht7beeX'
     const pub = 'EOS8gP74otXtG6GudaKuSyBVLFP6UGYU53rdCxxAu3tor8PK6M2o7'
     assert.equal(ecc.privateToPublic(wif), pub)
   })
 
   it('isValidPublic', () => {
     const keys = [
-      [true, 'PUB_K1_859gxfnXyUriMgUeThh1fWv3oqcpLFyHa3TfFYC4PK2Ht7beeX'],
+      [true, 'PUB_GM_8gP74otXtG6GudaKuSyBVLFP6UGYU53rdCxxAu3tor8PEWGNzj'],
+      //[true, 'PUB_GM_8gP74otXtG6GudaKuSyBVLFP6UGYU53rdCxxAu3tor8PK6M2o7'],
+      
       [true, 'EOS8gP74otXtG6GudaKuSyBVLFP6UGYU53rdCxxAu3tor8PK6M2o7'],
       [false, 'MMM859gxfnXyUriMgUeThh1fWv3oqcpLFyHa3TfFYC4PK2HqhToVM'],
       [false, 'EOS859gxfnXyUriMgUeThh1fWv3oqcpLFyHa3TfFYC4PK2HqhToVm', 'EOS'],
@@ -92,7 +94,7 @@ describe('Common API (initialized)', () => {
     const pvt = ecc.unsafeRandomKey().then(pvt => {
       assert.equal(typeof pvt, 'string', 'pvt')
       assert(/^5[HJK]/.test(wif))
-      // assert(/^PVT_K1_/.test(pvt))
+      // assert(/^PVT_GM_/.test(pvt))
     })
   })
 })

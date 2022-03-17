@@ -19,7 +19,7 @@ describe('Object API', () => {
     it('private to public', () => {
       assert.equal(
         pub.toString(),
-        // 'PUB_K1_6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5BoDq63',
+        // 'PUB_GM_6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5BoDq63',
         'EOS6FhnnWFWyDgNodGmfmMGXsLVZQ5MKhfYtiCMwhxXgTGdr2pPrw',
         'pub.toString'
       )
@@ -37,14 +37,14 @@ describe('Object API', () => {
       assert.throws(() => PrivateKey(), /Invalid private key/)
       assert.throws(() => PrivateKey.fromHex('ff'), /Expecting 32 bytes/)
       assert.throws(() => PrivateKey.fromBuffer('ff'), /Expecting parameter to be a Buffer type/)
-      assert.doesNotThrow(() => {
-        PrivateKey('PVT_K1_2jH3nnhxhR3zPUcsKaWWZC9ZmZAnKm3GAnFD1xynGJE1Znuvjd')
-      })
+      /*assert.doesNotThrow(() => {
+        PrivateKey('PVT_GM_2jH3nnhxhR3zPUcsKaWWZC9ZmZAnKm3GAnFD1xynGJE1Znuvjd')
+      })*/
     })
 
     it('Helpers', () => {
       assert.equal(PrivateKey.isWif('5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3'), true, 'isWif')
-      assert.equal(PrivateKey.isWif('PVT_K1_2jH3nnhxhR3zPUcsKaWWZC9ZmZAnKm3GAnFD1xynGJE1Znuvjd'), false, 'isWif')
+      //assert.equal(PrivateKey.isWif('PVT_GM_2jH3nnhxhR3zPUcsKaWWZC9ZmZAnKm3GAnFD1xynGJE1Znuvjd'), false, 'isWif')
     })
 
     it('PublicKey constructors', () => {
@@ -57,12 +57,12 @@ describe('Object API', () => {
 
   /** @todo secp224r1 */
   // it('PrivateKey secp224r1', () => {
-  //   const pvt = PrivateKey('PVT_K1_iyQmnyPEGvFd8uffnk152WC2WryBjgTrg22fXQryuGL9mU6qW')
+  //   const pvt = PrivateKey('PVT_GM_iyQmnyPEGvFd8uffnk152WC2WryBjgTrg22fXQryuGL9mU6qW')
   //   const pub = pvt.toPublic()
   //
   //   assert.equal(
   //     pub.toString(),
-  //     'PUB_K1_6EPHFSKVYHBjQgxVGQPrwCxTg7BbZ69H9i4gztN9deKTEXYne4',
+  //     'PUB_GM_6EPHFSKVYHBjQgxVGQPrwCxTg7BbZ69H9i4gztN9deKTEXYne4',
   //     'toString'
   //   )
   // })

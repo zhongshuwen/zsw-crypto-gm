@@ -2,13 +2,13 @@ const assert = require('assert');
 const ecurve = require('ecurve');
 const BigInteger = require('bigi');
 
-const secp256k1 =  require('./sm2curve').getSM2Curve()
+const secp256GM =  require('./sm2curve').getSM2Curve()
 
 const hash = require('./hash');
 const keyUtils = require('./key_utils');
 
-var G = secp256k1.G
-var n = secp256k1.n
+var G = secp256GM.G
+var n = secp256GM.n
 
 module.exports = PublicKey
 
@@ -38,13 +38,13 @@ function PublicKey(Q, pubkey_prefix = 'EOS') {
 
     // /**
     //     @todo secp224r1
-    //     @return {string} PUB_K1_base58pubkey..
+    //     @return {string} PUB_GM_base58pubkey..
     // */
     // function toString() {
     //     if(pubdata) {
     //         return pubdata
     //     }
-    //     pubdata = `PUB_K1_` + keyUtils.checkEncode(toBuffer(), 'K1')
+    //     pubdata = `PUB_GM_` + keyUtils.checkEncode(toBuffer(), 'GM')
     //     return pubdata;
     // }
 
@@ -52,12 +52,12 @@ function PublicKey(Q, pubkey_prefix = 'EOS') {
      * @arg {string} [pubkey_prefix = 'EOS'] - public key prefix
     */
     function toString(pubkey_prefix = 'EOS') {
-      return pubkey_prefix + keyUtils.checkEncode(toBuffer())
+      return pubkey_prefix + (pubkey_prefix==="EOS"?keyUtils.checkEncode(toBuffer()):keyUtils.checkEncode(toBuffer(),pubkey_prefix.split("_")[1]))
     }
 
     function toUncompressed() {
         var buf = Q.getEncoded(false);
-        var point = ecurve.Point.decodeFrom(secp256k1, buf);
+        var point = ecurve.Point.decodeFrom(secp256GM, buf);
         return PublicKey.fromPoint(point);
     }
 
@@ -80,7 +80,7 @@ function PublicKey(Q, pubkey_prefix = 'EOS') {
         let cG = G.multiply(c)
         let Qprime = Q.add(cG)
 
-        if( secp256k1.isInfinity(Qprime) )
+        if( secp256GM.isInfinity(Qprime) )
             throw new Error("Child offset derived to an invalid key, try again")
 
         return PublicKey.fromPoint(Qprime)
@@ -119,7 +119,7 @@ PublicKey.fromBinary = function(bin) {
 }
 
 PublicKey.fromBuffer = function(buffer) {
-    return PublicKey(ecurve.Point.decodeFrom(secp256k1, buffer));
+    return PublicKey(ecurve.Point.decodeFrom(secp256GM, buffer));
 }
 
 PublicKey.fromPoint = function(point) {
@@ -127,7 +127,7 @@ PublicKey.fromPoint = function(point) {
 }
 
 /**
-    @arg {string} public_key - like PUB_K1_base58pubkey..
+    @arg {string} public_key - like PUB_GM_base58pubkey..
     @arg {string} [pubkey_prefix = 'EOS'] - public key prefix
     @return PublicKey or `null` (invalid)
 */
@@ -140,7 +140,7 @@ PublicKey.fromString = function(public_key, pubkey_prefix = 'EOS') {
 }
 
 /**
-    @arg {string} public_key - like PUB_K1_base58pubkey..
+    @arg {string} public_key - like PUB_GM_base58pubkey..
     @arg {string} [pubkey_prefix = 'EOS'] - public key prefix
 
     @throws {Error} if public key is invalid
@@ -158,9 +158,9 @@ PublicKey.fromStringOrThrow = function(public_key, pubkey_prefix = 'EOS') {
       }
       return PublicKey.fromBuffer(keyUtils.checkDecode(public_key))
     }
-    assert(match.length === 3, 'Expecting public key like: PUB_K1_base58pubkey..')
+    assert(match.length === 3, 'Expecting public key like: PUB_GM_base58pubkey..')
     const [, keyType, keyString] = match
-    assert.equal(keyType, 'K1', 'K1 private key expected')
+    assert.equal(keyType, 'GM', 'GM private key expected')
     return PublicKey.fromBuffer(keyUtils.checkDecode(keyString, keyType))
 }
 
